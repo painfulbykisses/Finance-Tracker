@@ -122,6 +122,7 @@
             err_username_short: 'Nama pengguna minimal 3 karakter!',
             err_password_short: 'Kata sandi minimal 4 karakter!',
             err_username_taken: 'Nama pengguna sudah dipakai!',
+            err_email_taken: 'Email sudah terdaftar! Silakan login.',
             // History type labels
             type_income: 'Pemasukan',
             type_expense: 'Pengeluaran',
@@ -227,6 +228,7 @@
             err_username_short: 'Username must be at least 3 characters!',
             err_password_short: 'Password must be at least 4 characters!',
             err_username_taken: 'Username already taken!',
+            err_email_taken: 'Email already registered! Please login.',
             type_income: 'Income',
             type_expense: 'Expense',
         },
@@ -344,6 +346,7 @@
 
     // ──── INIT ────
     function init() {
+        migrateOldData();
         currentLang = load(KEYS.LANG, 'id');
         applyTheme(load(KEYS.THEME, 'classic'));
         applyI18n();
@@ -369,6 +372,31 @@
         const sidebarBtn = $('#lang-toggle-btn');
         if (authBtn) authBtn.addEventListener('click', toggleLanguage);
         if (sidebarBtn) sidebarBtn.addEventListener('click', toggleLanguage);
+    }
+
+    // ──── MIGRATE OLD DATA (y2k_ → ef_) ────
+    function migrateOldData() {
+        const oldPrefix = 'y2k_';
+        const newPrefix = 'ef_';
+        const keysToMigrate = ['users', 'session', 'theme', 'lang'];
+        keysToMigrate.forEach((k) => {
+            const oldKey = oldPrefix + k;
+            const newKey = newPrefix + k;
+            if (localStorage.getItem(oldKey) && !localStorage.getItem(newKey)) {
+                localStorage.setItem(newKey, localStorage.getItem(oldKey));
+            }
+        });
+        // Migrate per-user data (transactions, categories, feedback, avatar)
+        const users = load(KEYS.USERS, []);
+        users.forEach((u) => {
+            ['transactions', 'categories', 'feedback', 'avatar'].forEach((suffix) => {
+                const oldKey = oldPrefix + suffix + '_' + u.username;
+                const newKey = newPrefix + suffix + '_' + u.username;
+                if (localStorage.getItem(oldKey) && !localStorage.getItem(newKey)) {
+                    localStorage.setItem(newKey, localStorage.getItem(oldKey));
+                }
+            });
+        });
     }
 
     // ──── AUTH ────
@@ -426,6 +454,10 @@
             const users = load(KEYS.USERS, []);
             if (users.find((u) => u.username === username)) {
                 showAuthError(t('err_username_taken'));
+                return;
+            }
+            if (users.find((u) => u.email === email)) {
+                showAuthError(t('err_email_taken'));
                 return;
             }
             users.push({ username, email, password });
