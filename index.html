@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="classic" data-lang="id">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Eirkized Finance</title>
+  <meta name="description" content="Lacak pemasukan dan pengeluaranmu — by Eirkized" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Press+Start+2P&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+
+  <!-- ═══════════════ AUTH SCREEN ═══════════════ -->
+  <div id="auth-screen" class="auth-screen">
+    <div class="auth-container">
+      <div class="auth-logo">
+        <div class="auth-logo-icon">💰</div>
+        <h1 class="auth-title">Eirkized Finance</h1>
+      </div>
+      <p class="auth-subtitle" data-i18n="auth_subtitle">~ Lacak duitmu, gaya retro ~</p>
+
+      <div class="lang-toggle-auth">
+        <button id="auth-lang-btn" class="btn btn-ghost btn-sm" data-i18n="lang_switch">🌐 English</button>
+      </div>
+
+      <!-- Login Form -->
+      <form id="login-form" class="auth-form">
+        <h2 data-i18n="login_title">Masuk</h2>
+        <div class="form-group">
+          <label for="login-username" data-i18n="username">Nama Pengguna</label>
+          <input type="text" id="login-username" data-i18n-placeholder="username_placeholder" placeholder="masukkanNama"
+            required />
+        </div>
+        <div class="form-group">
+          <label for="login-password" data-i18n="password">Kata Sandi</label>
+          <input type="password" id="login-password" placeholder="••••••••" required />
+        </div>
+        <button type="submit" class="btn btn-primary btn-block" id="login-btn" data-i18n="login_btn">» Masuk «</button>
+        <p class="auth-switch"><span data-i18n="no_account">Belum punya akun?</span> <a href="#" id="show-register"
+            data-i18n="register_here">Daftar di sini!</a></p>
+      </form>
+
+      <!-- Register Form -->
+      <form id="register-form" class="auth-form hidden">
+        <h2 data-i18n="register_title">Daftar</h2>
+        <div class="form-group">
+          <label for="reg-username" data-i18n="username">Nama Pengguna</label>
+          <input type="text" id="reg-username" data-i18n-placeholder="pick_name" placeholder="pilihNama" required />
+        </div>
+        <div class="form-group">
+          <label for="reg-email">Email</label>
+          <input type="email" id="reg-email" placeholder="email@kamu.com" required />
+        </div>
+        <div class="form-group">
+          <label for="reg-password" data-i18n="password">Kata Sandi</label>
+          <input type="password" id="reg-password" placeholder="••••••••" required />
+        </div>
+        <button type="submit" class="btn btn-primary btn-block" id="register-btn" data-i18n="register_btn">» Daftar
+          «</button>
+        <p class="auth-switch"><span data-i18n="has_account">Sudah punya akun?</span> <a href="#" id="show-login"
+            data-i18n="login_here">Masuk di sini!</a></p>
+      </form>
+      <div id="auth-error" class="auth-error hidden"></div>
+    </div>
+  </div>
+
+  <!-- ═══════════════ MAIN APP ═══════════════ -->
+  <div id="app" class="app-wrapper hidden">
+
+    <!-- Sidebar -->
+    <nav id="sidebar" class="sidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-user">
+          <div class="avatar-wrapper">
+            <div class="avatar" id="user-avatar" title="Klik untuk ganti foto profil">👤</div>
+            <div class="avatar-upload-hint">📷</div>
+          </div>
+          <input type="file" id="avatar-upload" accept="image/*" class="hidden" />
+          <span class="user-name" id="user-badge">User</span>
+        </div>
+        <button id="sidebar-close" class="sidebar-close" aria-label="Tutup menu">✕</button>
+      </div>
+
+      <ul class="nav-list">
+        <li><a href="#" class="nav-link active" data-view="dashboard"><span class="nav-icon">🏠</span> <span
+              data-i18n="nav_dashboard_text">Dasbor</span></a></li>
+        <li><a href="#" class="nav-link" data-view="add-transaction"><span class="nav-icon">➕</span> <span
+              data-i18n="nav_add_text">Tambah Transaksi</span></a></li>
+        <li><a href="#" class="nav-link" data-view="history"><span class="nav-icon">📜</span> <span
+              data-i18n="nav_history_text">Riwayat</span></a></li>
+        <li><a href="#" class="nav-link" data-view="categories"><span class="nav-icon">🏷️</span> <span
+              data-i18n="nav_categories_text">Kategori</span></a></li>
+        <li><a href="#" class="nav-link" data-view="charts"><span class="nav-icon">📊</span> <span
+              data-i18n="nav_charts_text">Grafik</span></a></li>
+        <li><a href="#" class="nav-link" data-view="help"><span class="nav-icon">❓</span> <span
+              data-i18n="nav_help_text">Bantuan</span></a></li>
+        <li><a href="#" class="nav-link" data-view="feedback"><span class="nav-icon">💬</span> <span
+              data-i18n="nav_feedback_text">Masukan</span></a></li>
+      </ul>
+
+      <div class="sidebar-footer">
+        <button id="lang-toggle-btn" class="btn btn-ghost btn-sm btn-block">🌐 English</button>
+        <button id="theme-toggle-btn" class="btn btn-ghost btn-sm btn-block" data-i18n="themes_btn">🎨 Tema</button>
+        <button id="logout-btn" class="btn btn-danger-ghost btn-sm btn-block" data-i18n="logout_btn">🚪 Keluar</button>
+        <div class="sidebar-brand">
+          <span class="brand-text">Eirkized</span>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Overlay for mobile sidebar -->
+    <div id="sidebar-overlay" class="sidebar-overlay hidden"></div>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Top Bar -->
+      <header class="top-bar">
+        <button id="hamburger" class="hamburger" aria-label="Buka menu">☰</button>
+        <div class="top-bar-title" id="page-title" data-i18n="nav_dashboard_text">Dasbor</div>
+        <div class="marquee-wrapper">
+          <div class="marquee" id="marquee-text">★ Selamat datang ★</div>
+        </div>
+      </header>
+
+      <!-- ──── DASHBOARD VIEW ──── -->
+      <section id="view-dashboard" class="view active">
+        <!-- Summary Cards Row -->
+        <div class="summary-cards">
+          <div class="summary-card card-income">
+            <div class="card-header-row">
+              <span class="card-label" data-i18n="total_income">Total Pemasukan</span>
+              <span class="card-icon-badge income-badge">💰</span>
+            </div>
+            <p class="card-amount" id="total-income">Rp0</p>
+          </div>
+          <div class="summary-card card-expense">
+            <div class="card-header-row">
+              <span class="card-label" data-i18n="total_expenses">Total Pengeluaran</span>
+              <span class="card-icon-badge expense-badge">💸</span>
+            </div>
+            <p class="card-amount" id="total-expenses">Rp0</p>
+          </div>
+          <div class="summary-card card-balance">
+            <div class="card-header-row">
+              <span class="card-label" data-i18n="balance">Saldo</span>
+              <span class="card-icon-badge balance-badge">💎</span>
+            </div>
+            <p class="card-amount" id="total-balance">Rp0</p>
+          </div>
+        </div>
+
+        <!-- Quick Access -->
+        <div class="quick-access">
+          <h3 class="section-label">Quick Access</h3>
+          <div class="quick-actions">
+            <button class="quick-btn quick-btn-1" data-view="add-transaction"><span class="quick-icon">➕</span> <span
+                data-i18n="nav_add_text">Tambah Transaksi</span></button>
+            <button class="quick-btn quick-btn-2" data-view="history"><span class="quick-icon">📜</span> <span
+                data-i18n="nav_history_text">Riwayat</span></button>
+            <button class="quick-btn quick-btn-3" data-view="charts"><span class="quick-icon">📊</span> <span
+                data-i18n="nav_charts_text">Grafik</span></button>
+            <button class="quick-btn quick-btn-4" data-view="categories"><span class="quick-icon">🏷️</span> <span
+                data-i18n="nav_categories_text">Kategori</span></button>
+          </div>
+        </div>
+
+        <!-- Two-Column: Recent Expenses + Charts -->
+        <div class="dashboard-grid">
+          <div class="dash-card">
+            <h3 class="dash-card-title" data-i18n="recent_txn">Transaksi Terbaru</h3>
+            <div class="table-wrapper">
+              <table class="data-table" id="recent-table">
+                <thead>
+                  <tr>
+                    <th data-i18n="th_date">Tanggal</th>
+                    <th data-i18n="th_category">Kategori</th>
+                    <th data-i18n="th_note">Catatan</th>
+                    <th data-i18n="th_amount">Jumlah</th>
+                  </tr>
+                </thead>
+                <tbody id="recent-tbody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Monthly Report -->
+        <div class="dashboard-charts-row">
+          <div class="dash-card">
+            <h3 class="dash-card-title" data-i18n="expenses_by_cat">Pengeluaran per Kategori</h3>
+            <div class="chart-container chart-container-sm">
+              <canvas id="dashboard-pie"></canvas>
+            </div>
+          </div>
+          <div class="dash-card">
+            <h3 class="dash-card-title" data-i18n="monthly_overview">Ringkasan Bulanan</h3>
+            <div class="chart-container chart-container-sm">
+              <canvas id="dashboard-bar"></canvas>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ──── ADD TRANSACTION VIEW ──── -->
+      <section id="view-add-transaction" class="view hidden">
+        <h1 class="view-title" data-i18n="add_txn_title">✧ Tambah Transaksi ✧</h1>
+        <form id="transaction-form" class="form-card">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="txn-type" data-i18n="type">Tipe</label>
+              <select id="txn-type" required>
+                <option value="income" data-i18n="income_opt">💰 Pemasukan</option>
+                <option value="expense" data-i18n="expense_opt">💸 Pengeluaran</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="txn-date" data-i18n="date">Tanggal</label>
+              <input type="date" id="txn-date" required />
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="txn-category" data-i18n="category">Kategori</label>
+              <select id="txn-category" required></select>
+            </div>
+            <div class="form-group">
+              <label for="txn-amount" data-i18n="amount_label">Jumlah (Rp)</label>
+              <input type="number" id="txn-amount" min="1" step="1" placeholder="0" required />
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="txn-note" data-i18n="notes">Catatan</label>
+            <textarea id="txn-note" rows="3" data-i18n-placeholder="add_note"
+              placeholder="Tambahkan catatan..."></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary btn-block" data-i18n="add_txn_btn">✦ Tambah Transaksi ✦</button>
+        </form>
+      </section>
+
+      <!-- ──── HISTORY VIEW ──── -->
+      <section id="view-history" class="view hidden">
+        <h1 class="view-title" data-i18n="history_title">✧ Riwayat Transaksi ✧</h1>
+        <div class="filter-bar">
+          <div class="form-group">
+            <label for="filter-start" data-i18n="from">Dari</label>
+            <input type="date" id="filter-start" />
+          </div>
+          <div class="form-group">
+            <label for="filter-end" data-i18n="to">Sampai</label>
+            <input type="date" id="filter-end" />
+          </div>
+          <div class="form-group">
+            <label for="filter-category" data-i18n="category">Kategori</label>
+            <select id="filter-category">
+              <option value="" data-i18n="all">Semua</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="filter-type" data-i18n="type">Tipe</label>
+            <select id="filter-type">
+              <option value="" data-i18n="all">Semua</option>
+              <option value="income" data-i18n="income_opt">Pemasukan</option>
+              <option value="expense" data-i18n="expense_opt">Pengeluaran</option>
+            </select>
+          </div>
+          <button class="btn btn-primary btn-sm" id="apply-filters-btn" data-i18n="filter_btn">🔍 Filter</button>
+          <button class="btn btn-ghost btn-sm" id="clear-filters-btn" data-i18n="clear_btn">✕ Hapus</button>
+        </div>
+        <div class="dash-card">
+          <div class="table-wrapper">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th data-i18n="th_date">Tanggal</th>
+                  <th data-i18n="th_type">Tipe</th>
+                  <th data-i18n="th_category">Kategori</th>
+                  <th data-i18n="th_note">Catatan</th>
+                  <th data-i18n="th_amount">Jumlah</th>
+                  <th data-i18n="th_actions">Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="history-tbody"></tbody>
+            </table>
+          </div>
+          <p id="history-empty" class="empty-msg hidden" data-i18n="no_txn">Belum ada transaksi ✧</p>
+        </div>
+      </section>
+
+      <!-- ──── CATEGORIES VIEW ──── -->
+      <section id="view-categories" class="view hidden">
+        <h1 class="view-title" data-i18n="cat_mgmt_title">✧ Kelola Kategori ✧</h1>
+        <form id="category-form" class="form-card inline-form">
+          <div class="form-group">
+            <label for="cat-name" data-i18n="name">Nama</label>
+            <input type="text" id="cat-name" data-i18n-placeholder="new_category" placeholder="Kategori baru"
+              required />
+          </div>
+          <div class="form-group">
+            <label for="cat-icon" data-i18n="icon">Ikon</label>
+            <select id="cat-icon">
+              <option value="🍔">🍔</option>
+              <option value="🎬">🎬</option>
+              <option value="🏠">🏠</option>
+              <option value="🚗">🚗</option>
+              <option value="💊">💊</option>
+              <option value="📚">📚</option>
+              <option value="🛍️">🛍️</option>
+              <option value="💼">💼</option>
+              <option value="🎁">🎁</option>
+              <option value="⚡">⚡</option>
+              <option value="💰">💰</option>
+              <option value="📈">📈</option>
+              <option value="🌟">🌟</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="cat-color" data-i18n="color">Warna</label>
+            <input type="color" id="cat-color" value="#7C3AED" />
+          </div>
+          <input type="hidden" id="cat-edit-id" value="" />
+          <button type="submit" class="btn btn-primary btn-sm" id="cat-submit-btn" data-i18n="add_btn">➕ Tambah</button>
+          <button type="button" class="btn btn-ghost btn-sm hidden" id="cat-cancel-btn" data-i18n="cancel_btn">✕
+            Batal</button>
+        </form>
+        <div class="category-grid" id="category-grid"></div>
+      </section>
+
+      <!-- ──── CHARTS VIEW ──── -->
+      <section id="view-charts" class="view hidden">
+        <h1 class="view-title" data-i18n="charts_title">✧ Grafik & Diagram ✧</h1>
+        <div class="dashboard-charts-row">
+          <div class="dash-card">
+            <h3 class="dash-card-title" data-i18n="pie_title">Rincian Pengeluaran</h3>
+            <div class="chart-container">
+              <canvas id="chart-pie"></canvas>
+            </div>
+          </div>
+          <div class="dash-card">
+            <h3 class="dash-card-title" data-i18n="bar_title">Pemasukan vs Pengeluaran</h3>
+            <div class="chart-container">
+              <canvas id="chart-bar"></canvas>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ──── HELP VIEW ──── -->
+      <section id="view-help" class="view hidden">
+        <h1 class="view-title" data-i18n="help_title">✧ Bantuan & Dukungan ✧</h1>
+        <div class="faq-list" id="faq-list">
+          <div class="faq-item">
+            <button class="faq-question" data-i18n="faq1_q">❓ Bagaimana cara menambah transaksi?</button>
+            <div class="faq-answer hidden">
+              <p data-i18n="faq1_a"></p>
+            </div>
+          </div>
+          <div class="faq-item">
+            <button class="faq-question" data-i18n="faq2_q">❓ Bagaimana cara membuat kategori kustom?</button>
+            <div class="faq-answer hidden">
+              <p data-i18n="faq2_a"></p>
+            </div>
+          </div>
+          <div class="faq-item">
+            <button class="faq-question" data-i18n="faq3_q">❓ Di mana data saya disimpan?</button>
+            <div class="faq-answer hidden">
+              <p data-i18n="faq3_a"></p>
+            </div>
+          </div>
+          <div class="faq-item">
+            <button class="faq-question" data-i18n="faq4_q">❓ Bagaimana cara memfilter riwayat transaksi?</button>
+            <div class="faq-answer hidden">
+              <p data-i18n="faq4_a"></p>
+            </div>
+          </div>
+          <div class="faq-item">
+            <button class="faq-question" data-i18n="faq5_q">❓ Bisakah saya mengganti tema?</button>
+            <div class="faq-answer hidden">
+              <p data-i18n="faq5_a"></p>
+            </div>
+          </div>
+          <div class="faq-item">
+            <button class="faq-question" data-i18n="faq6_q">❓ Bagaimana cara menghubungi dukungan?</button>
+            <div class="faq-answer hidden">
+              <p data-i18n="faq6_a"></p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ──── FEEDBACK VIEW ──── -->
+      <section id="view-feedback" class="view hidden">
+        <h1 class="view-title" data-i18n="feedback_title">✧ Masukan ✧</h1>
+        <form id="feedback-form" class="form-card">
+          <div class="form-group">
+            <label for="feedback-rating" data-i18n="how_rad">Seberapa keren aplikasi ini? ⭐</label>
+            <div class="star-rating" id="star-rating">
+              <span class="star" data-value="1">★</span>
+              <span class="star" data-value="2">★</span>
+              <span class="star" data-value="3">★</span>
+              <span class="star" data-value="4">★</span>
+              <span class="star" data-value="5">★</span>
+            </div>
+            <input type="hidden" id="feedback-rating" value="0" />
+          </div>
+          <div class="form-group">
+            <label for="feedback-text" data-i18n="your_thoughts">Pendapatmu</label>
+            <textarea id="feedback-text" rows="5" data-i18n-placeholder="tell_us" placeholder="Ceritakan pendapatmu..."
+              required></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary btn-block" data-i18n="send_feedback">✦ Kirim Masukan ✦</button>
+        </form>
+        <div id="feedback-success" class="success-msg hidden">
+          <p data-i18n="thanks_feedback">🌟 Terima kasih atas masukanmu! 🌟</p>
+        </div>
+        <div class="past-feedback hidden" id="past-feedback-section">
+          <h3 data-i18n="past_feedback">Masukan Sebelumnya</h3>
+          <div id="past-feedback-list"></div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- ═══════ THEME MODAL ═══════ -->
+  <div id="theme-modal" class="modal hidden">
+    <div class="modal-backdrop"></div>
+    <div class="modal-content">
+      <h2 data-i18n="theme_customizer">🎨 Kustomisasi Tema</h2>
+      <div class="theme-options">
+        <button class="theme-btn" data-theme="classic">
+          <span class="theme-preview classic-preview"></span>
+          <span>🌙 Dark Purple</span>
+        </button>
+        <button class="theme-btn" data-theme="cyber">
+          <span class="theme-preview cyber-preview"></span>
+          <span>💙 Ocean Blue</span>
+        </button>
+        <button class="theme-btn" data-theme="bubblegum">
+          <span class="theme-preview bubblegum-preview"></span>
+          <span>🌺 Rose Dark</span>
+        </button>
+      </div>
+      <button class="btn btn-ghost" id="close-theme-modal" data-i18n="close">Tutup</button>
+    </div>
+  </div>
+
+  <!-- ═══════ TOAST ═══════ -->
+  <div id="toast" class="toast hidden"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+  <script src="app.js"></script>
+</body>
+
+</html>
