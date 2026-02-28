@@ -308,6 +308,110 @@
         }
     }
 
+    // ──── FIREBASE CONFIG ────
+    // PENTING: Ganti config ini dengan Firebase project kamu!
+    const FIREBASE_CONFIG = {
+        apiKey: 'AIzaSyBC1puDVb6tF8-btFrbm4Giv7uaA8efELQ',
+        authDomain: 'financedzikri.firebaseapp.com',
+        databaseURL: 'https://financedzikri-default-rtdb.asia-southeast1.firebasedatabase.app',
+        projectId: 'financedzikri',
+        storageBucket: 'financedzikri.firebasestorage.app',
+        messagingSenderId: '1015368938063',
+        appId: '1:1015368938063:web:5bdee3538138cb4620f03a',
+    };
+
+    let firebaseApp = null;
+    let firebaseDb = null;
+    let firebaseReady = false;
+    let firebaseListenerAttached = false;
+
+    function initFirebase() {
+        try {
+            if (typeof firebase === 'undefined' || FIREBASE_CONFIG.apiKey === 'YOUR_API_KEY') {
+                console.log('⚠️ Firebase not configured — using localStorage only');
+                return;
+            }
+            firebaseApp = firebase.initializeApp(FIREBASE_CONFIG);
+            firebaseDb = firebase.database();
+            firebaseReady = true;
+            console.log('✅ Firebase connected');
+        } catch (err) {
+            console.warn('Firebase init failed:', err.message);
+        }
+    }
+
+    function firebaseSaveTransactions() {
+        if (!firebaseReady || !currentUser) return;
+        const ref = firebaseDb.ref('users/' + currentUser.username + '/transactions');
+        ref.set(transactions).catch(err => console.warn('Firebase save txn error:', err.message));
+    }
+
+    function firebaseSaveCategories() {
+        if (!firebaseReady || !currentUser) return;
+        const ref = firebaseDb.ref('users/' + currentUser.username + '/categories');
+        ref.set(categories).catch(err => console.warn('Firebase save cat error:', err.message));
+    }
+
+    function firebaseLoadAndListen() {
+        if (!firebaseReady || !currentUser || firebaseListenerAttached) return;
+
+        const txnRef = firebaseDb.ref('users/' + currentUser.username + '/transactions');
+
+        // Initial load from Firebase (overrides localStorage if available)
+        txnRef.once('value').then(snapshot => {
+            const fbData = snapshot.val();
+            if (fbData && Array.isArray(fbData)) {
+                // Merge: keep unique transactions from both sources
+                const existingIds = new Set(transactions.map(t => t.id));
+                const merged = [...transactions];
+                fbData.forEach(t => {
+                    if (!existingIds.has(t.id)) {
+                        merged.push(t);
+                    }
+                });
+                transactions = merged;
+                saveTransactions();
+                // Re-render if on dashboard
+                const activeView = document.querySelector('.view.active');
+                if (activeView) {
+                    const viewId = activeView.id.replace('view-', '');
+                    navigateTo(viewId);
+                }
+            }
+        }).catch(err => console.warn('Firebase load error:', err.message));
+
+        // Realtime listener for new transactions from bot
+        txnRef.on('value', snapshot => {
+            const fbData = snapshot.val();
+            if (!fbData || !Array.isArray(fbData)) return;
+
+            // Check if there are new transactions from other sources (e.g. Telegram bot)
+            const currentIds = new Set(transactions.map(t => t.id));
+            const newFromBot = fbData.filter(t => !currentIds.has(t.id));
+
+            if (newFromBot.length > 0) {
+                transactions = [...transactions, ...newFromBot];
+                store(KEYS.TRANSACTIONS + '_' + currentUser.username, transactions);
+                // Show toast for new bot transactions
+                newFromBot.forEach(t => {
+                    if (t.source === 'telegram') {
+                        const emoji = t.type === 'income' ? '💰' : '💸';
+                        showToast(`${emoji} Transaksi dari Telegram: ${formatRupiah(t.amount)}`);
+                    }
+                });
+                // Re-render current view
+                const activeView = document.querySelector('.view.active');
+                if (activeView) {
+                    const viewId = activeView.id.replace('view-', '');
+                    navigateTo(viewId);
+                }
+            }
+        });
+
+        firebaseListenerAttached = true;
+        console.log('🔄 Firebase realtime listener active');
+    }
+
     // ──── DEFAULT CATEGORIES ────
     const DEFAULT_CATEGORIES = [
         { id: 'cat-food', name: 'Makanan', icon: '🍔', color: '#F472B6', custom: false },
@@ -347,6 +451,7 @@
     // ──── INIT ────
     function init() {
         migrateOldData();
+        initFirebase();
         currentLang = load(KEYS.LANG, 'id');
         applyTheme(load(KEYS.THEME, 'classic'));
         applyI18n();
@@ -500,14 +605,18 @@
         }
         feedback = load(KEYS.FEEDBACK + '_' + userKey, []);
         populateCategorySelects();
+        // Start Firebase sync after loading local data
+        firebaseLoadAndListen();
     }
 
     function saveTransactions() {
         store(KEYS.TRANSACTIONS + '_' + currentUser.username, transactions);
+        firebaseSaveTransactions();
     }
 
     function saveCategories() {
         store(KEYS.CATEGORIES + '_' + currentUser.username, categories);
+        firebaseSaveCategories();
     }
 
     function saveFeedback() {
